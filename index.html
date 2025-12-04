@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MTU Tester by xsparvin (Fixed & Futuristic)</title>
-
   <style>
+    /* CSS Styling remains mostly the same, only adding necessary styles for new elements */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
     :root {
@@ -36,7 +36,7 @@
       --input-bg: #f8fafc;
       --shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 132, 255, 0.1);
     }
-
+  
     body {
       margin: 0;
       padding: 32px;
@@ -47,6 +47,7 @@
       transition: var(--transition);
       overflow-x: hidden;
       position: relative;
+      direction: rtl; /* Added for RTL support */
     }
     body::before {
       content: '';
@@ -120,6 +121,8 @@
       font-size: 16px;
       box-sizing: border-box;
       transition: var(--transition);
+      text-align: left; /* Keep LTR for URLs/numbers */
+      direction: ltr;
     }
     input[type="text"]:focus {
       outline: none;
@@ -138,6 +141,7 @@
       transition: var(--transition);
       position: relative;
       overflow: hidden;
+      white-space: nowrap; /* Prevent button text wrapping */
     }
     button::before {
       content: '';
@@ -171,6 +175,15 @@
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) !important;
       box-shadow: 0 0 15px var(--glow-secondary);
     }
+    #clear {
+      background: none;
+      color: #ff7b7b;
+      border: 1px solid #ff7b7b;
+    }
+    #clear:hover:not(:disabled) {
+      background: rgba(255, 123, 123, 0.1);
+      box-shadow: 0 0 15px rgba(255, 123, 123, 0.5);
+    }
     .live-box {
       margin-top: 24px;
       border: 1px solid var(--glass);
@@ -184,6 +197,7 @@
       font-size: 15px;
       margin-top: 8px;
       transition: color 0.3s;
+      text-align: right;
     }
     .status-default { color: var(--muted); }
     .status-ok { color: #66ffb8; text-shadow: 0 0 5px rgba(102, 255, 184, 0.5); }
@@ -202,6 +216,8 @@
       border: 1px solid var(--glass);
       font-size: 14px;
       box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+      direction: ltr; /* Ensure code block is LTR */
+      text-align: left;
     }
     table {
       width: 100%;
@@ -216,7 +232,7 @@
     th, td {
       padding: 16px;
       border-bottom: 1px solid var(--glass);
-      text-align: left;
+      text-align: right; /* RTL for table text */
       transition: background 0.3s;
     }
     tr:hover {
@@ -227,7 +243,7 @@
     .result-unknown { color: var(--muted); }
     .controls {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start; /* Changed to flex-start for RTL */
       gap: 12px;
       margin-bottom: 24px;
     }
@@ -266,6 +282,13 @@
       color: var(--accent-secondary);
       text-shadow: 0 0 5px var(--glow-secondary);
     }
+    .button-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        justify-content: flex-end; /* Align buttons to the left/right based on RTL */
+    }
     @media (max-width: 600px) {
       body { padding: 16px; }
       .card { padding: 24px; }
@@ -280,7 +303,6 @@
 </head>
 <body>
 <div class="wrap">
-
   <div class="controls">
     <div id="languageToggle" class="control-btn" data-lang="fa">EN / FA</div>
     <div id="themeToggle" class="control-btn">💡 / 🌙</div>
@@ -289,17 +311,22 @@
   <h1 id="appTitle">تستر MTU</h1>
 
   <div class="card">
-    <label id="labelSize">اندازه بار مفید (بایت)</label>
-    <input id="size" type="text" value="1400" />
+    <label id="labelService">آدرس سرویس تست (Payload + Size)</label>
+    <input id="serviceURL" type="text" value="https://httpbin.org/bytes/" dir="ltr" />
 
-    <div class="button-group" style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;">
-      <button id="run">اجرای تست</button>
-      <button id="auto">تست خودکار چندگانه</button>
+    <label id="labelSize" style="margin-top: 16px;">اندازه بار مفید (بایت)</label>
+    <input id="size" type="text" value="1472" dir="ltr" />
+    
+    <div class="button-group" style="margin-top:14px;">
+        <button id="clear" style="order: 4;">پاک کردن نتایج</button>
+        <button id="run" style="order: 2;">اجرای تست تکی</button>
+        <button id="auto" style="order: 1;">تست خودکار (جستجوی باینری)</button>
     </div>
 
     <div class="live-box" id="liveBox">
       <strong id="strongStatus">وضعیت لحظه‌ای:</strong>
       <div id="liveStatus" class="status status-default">هنوز تستی انجام نشده است</div>
+      <div id="targetDisplay" style="font-size:12px; color:var(--accent-secondary); margin-top: 4px; text-align: right;"></div>
     </div>
 
     <table id="results">
@@ -312,6 +339,7 @@
       </thead>
       <tbody></tbody>
     </table>
+
   </div>
 
   <div class="card">
@@ -322,7 +350,7 @@
     </p>
 <pre>
 Linux:
-  ping -M do -s &lt;PAYLOAD&gt; host
+  ping -M do -s &lt;PAYLOAD&gt; host  
 
 macOS:
   ping -D -s &lt;PAYLOAD&gt; host
@@ -331,14 +359,15 @@ Windows:
   ping -f -l &lt;PAYLOAD&gt; host
 
 فرمول:
-  MTU = payload + 28 (IP header + ICMP header)
-  MTU واقعی شبکه شما = بزرگترین payload موفق + 28
+MTU = payload + 28 (IP header + ICMP header)
+MTU واقعی شبکه شما = بزرگترین payload موفق + 28
 </pre>
-    <div id="currentResults" style="margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.1); border-radius: 8px;">
-      <h4 style="margin: 0 0 8px 0; color: var(--accent);">نتایج فعلی:</h4>
-      <div id="summaryText">هنوز تستی انجام نشده است.</div>
-      <div id="recommendedMTU" style="margin-top: 8px; font-weight: bold; color: var(--accent);"></div>
-    </div>
+<div id="currentResults" style="margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.1); border-radius: 8px;">
+<h4 style="margin: 0 0 8px 0; color: var(--accent);">نتایج فعلی:</h4>
+<div id="summaryText">هنوز تستی انجام نشده است.</div>
+<div id="recommendedMTU" style="margin-top: 8px; font-weight: bold; color: var(--accent);"></div>
+</div>
+
   </div>
 
   <footer>
@@ -352,9 +381,11 @@ Windows:
   const translations = {
     fa: {
       appTitle: "تستر MTU",
+      labelService: "آدرس سرویس تست (Payload + Size)",
       labelSize: "اندازه بار مفید (بایت)",
-      run: "اجرای تست",
-      auto: "تست خودکار چندگانه",
+      run: "اجرای تست تکی",
+      auto: "تست خودکار (جستجوی باینری)",
+      clear: "پاک کردن نتایج",
       strongStatus: "وضعیت لحظه‌ای:",
       statusNoTest: "هنوز تستی انجام نشده است",
       thSize: "اندازه",
@@ -365,17 +396,27 @@ Windows:
       statusTesting: (size) => `درحال تست ${size} بایت...`,
       statusSuccess: (size) => `موفقیت برای ${size} بایت`,
       statusNetworkError: "خطای شبکه / عدم تطابق اندازه",
-      statusComplete: "تست خودکار کامل شد",
+      statusComplete: "جستجوی باینری کامل شد. بزرگترین Payload موفق یافت شد.",
       statusInvalidInput: "ورودی نامعتبر",
       summaryNoTests: "هنوز تستی انجام نشده است.",
       summaryTestsDone: "تست‌های انجام شده: {{total}} | موفق: {{success}} | ناموفق: {{failed}}",
-      recommendedMTU: "پیشنهاد MTU: {{mtu}} (بر اساس بزرگترین payload موفق: {{payload}} بایت)"
+      recommendedMTU: "پیشنهاد MTU: {{mtu}} (بر اساس بزرگترین payload موفق: {{payload}} بایت)",
+      warningJumbo: " ⚠️ (بالاتر از MTU معمولی اترنت)",
+      warningSmall: " ⚠️ (خیلی کوچک، ممکن است مشکلات اتصال داشته باشید)",
+      successNormal: " ✅ (مناسب برای بیشتر شبکه‌ها)",
+      resultSuccessSuffix: (mtu) => ` — MTU=${mtu}`,
+      resultMismatch: (received, expected, mtu) => `عدم تطابق: دریافت ${received}/${expected} — MTU محاسبه شده: ${mtu}`,
+      resultTimeout: (ms) => `Timeout بعد از ${ms}ms`,
+      resultError: (msg) => `خطا: ${msg}`,
+      networkError: "خطای شبکه"
     },
     en: {
       appTitle: "MTU Tester",
+      labelService: "Test Service URL (Payload + Size)",
       labelSize: "Payload Size (bytes)",
-      run: "Run Test",
-      auto: "Auto Multi-Test",
+      run: "Run Single Test",
+      auto: "Auto Test (Binary Search)",
+      clear: "Clear Results",
       strongStatus: "Live Status:",
       statusNoTest: "No test yet",
       thSize: "Size",
@@ -386,20 +427,30 @@ Windows:
       statusTesting: (size) => `Testing ${size} bytes...`,
       statusSuccess: (size) => `Success for ${size} bytes`,
       statusNetworkError: "Network Error / Size Mismatch",
-      statusComplete: "Auto Test Complete",
+      statusComplete: "Binary Search Complete. Largest successful payload found.",
       statusInvalidInput: "Invalid input",
       summaryNoTests: "No tests performed yet.",
       summaryTestsDone: "Tests done: {{total}} | Success: {{success}} | Failed: {{failed}}",
-      recommendedMTU: "Recommended MTU: {{mtu}} (based on largest successful payload: {{payload}} bytes)"
+      recommendedMTU: "Recommended MTU: {{mtu}} (based on largest successful payload: {{payload}} bytes)",
+      warningJumbo: " ⚠️ (Higher than standard Ethernet MTU)",
+      warningSmall: " ⚠️ (Very small, may cause connectivity issues)",
+      successNormal: " ✅ (Suitable for most networks)",
+      resultSuccessSuffix: (mtu) => ` — MTU=${mtu}`,
+      resultMismatch: (received, expected, mtu) => `Mismatch: Received ${received}/${expected} — Computed MTU: ${mtu}`,
+      resultTimeout: (ms) => `Timeout after ${ms}ms`,
+      resultError: (msg) => `Error: ${msg}`,
+      networkError: "Network Error"
     }
   };
 
   // DOM refs
   const elementsToTranslate = {
     appTitle: document.getElementById('appTitle'),
+    labelService: document.getElementById('labelService'),
     labelSize: document.getElementById('labelSize'),
     run: document.getElementById('run'),
     auto: document.getElementById('auto'),
+    clear: document.getElementById('clear'),
     strongStatus: document.getElementById('strongStatus'),
     thSize: document.getElementById('thSize'),
     thResult: document.getElementById('thResult'),
@@ -416,9 +467,11 @@ Windows:
     document.documentElement.lang = lang === 'fa' ? 'fa' : 'en';
 
     elementsToTranslate.appTitle.textContent = texts.appTitle;
+    elementsToTranslate.labelService.textContent = texts.labelService;
     elementsToTranslate.labelSize.textContent = texts.labelSize;
     elementsToTranslate.run.textContent = texts.run;
     elementsToTranslate.auto.textContent = texts.auto;
+    elementsToTranslate.clear.textContent = texts.clear;
     elementsToTranslate.strongStatus.textContent = texts.strongStatus;
     elementsToTranslate.thSize.textContent = texts.thSize;
     elementsToTranslate.thResult.textContent = texts.thResult;
@@ -427,14 +480,17 @@ Windows:
     elementsToTranslate.pAccurate.textContent = texts.pAccurate;
 
     const statusBox = document.getElementById('liveStatus');
-    if (statusBox.textContent === translations.fa.statusNoTest || statusBox.textContent === translations.en.statusNoTest) {
+    // Only update if it's currently showing the default 'No Test Yet' message
+    const faDefault = translations.fa.statusNoTest;
+    const enDefault = translations.en.statusNoTest;
+    if (statusBox.textContent === faDefault || statusBox.textContent === enDefault) {
       statusBox.textContent = texts.statusNoTest;
     }
-    
+
     // Update summary
     updateSummary();
-    
-    // Toggle button label (shows current lang / other)
+
+    // Toggle button label
     langToggle.textContent = lang === 'fa' ? 'EN / FA' : 'FA / EN';
   }
 
@@ -459,291 +515,11 @@ Windows:
   });
 
   // Main logic
+  const serviceInput = document.getElementById('serviceURL'); // NEW
   const sizeInput = document.getElementById('size');
   const statusBox = document.getElementById('liveStatus');
+  const targetDisplay = document.getElementById('targetDisplay'); // NEW
   const resultsBody = document.querySelector('#results tbody');
   const btnRun = document.getElementById('run');
-  const btnAuto = document.getElementById('auto');
-  const summaryText = document.getElementById('summaryText');
-  const recommendedMTU = document.getElementById('recommendedMTU');
+  const btnAuto = document.
 
-  // Use a reliable testing endpoint
-  // Note: Most CDNs and APIs don't respect MTU/DF flags in browser context
-  // This test checks if data of specific size can be transferred, not actual MTU
-  const service = "https://httpbin.org/bytes/";
-
-  // Test results storage
-  let testResults = {
-    total: 0,
-    success: 0,
-    failed: 0,
-    largestSuccessfulPayload: 0
-  };
-
-  function updateSummary() {
-    const texts = translations[currentLang];
-    
-    if (testResults.total === 0) {
-      summaryText.textContent = texts.summaryNoTests;
-      recommendedMTU.textContent = '';
-      return;
-    }
-    
-    let summary = texts.summaryTestsDone
-      .replace('{{total}}', testResults.total)
-      .replace('{{success}}', testResults.success)
-      .replace('{{failed}}', testResults.failed);
-    
-    summaryText.textContent = summary;
-    
-    if (testResults.largestSuccessfulPayload > 0) {
-      const mtu = testResults.largestSuccessfulPayload + 28;
-      let mtuText = texts.recommendedMTU
-        .replace('{{mtu}}', mtu)
-        .replace('{{payload}}', testResults.largestSuccessfulPayload);
-      
-      // Add warning for common MTU values
-      if (mtu > 1500) {
-        mtuText += " ⚠️ (بالاتر از MTU معمولی اترنت)";
-      } else if (mtu < 576) {
-        mtuText += " ⚠️ (خیلی کوچک، ممکن است مشکلات اتصال داشته باشید)";
-      } else if (mtu >= 1300 && mtu <= 1500) {
-        mtuText += " ✅ (مناسب برای بیشتر شبکه‌ها)";
-      }
-      
-      recommendedMTU.textContent = mtuText;
-    } else {
-      recommendedMTU.textContent = '';
-    }
-  }
-
-  function setStatus(key, size, cls){
-    const texts = translations[currentLang];
-    let text;
-    
-    if (key === 'statusTesting') {
-      text = (typeof texts.statusTesting === 'function') ? texts.statusTesting(size) : texts.statusTesting;
-    } else if (key === 'statusSuccess') {
-      text = (typeof texts.statusSuccess === 'function') ? texts.statusSuccess(size) : texts.statusSuccess;
-    } else if (key === 'statusNetworkError') {
-      text = texts.statusNetworkError;
-    } else if (key === 'statusComplete') {
-      text = texts.statusComplete;
-    } else if (key === 'statusInvalidInput') {
-      text = texts.statusInvalidInput;
-    } else {
-      text = texts.statusNoTest;
-    }
-    
-    // Remove all status classes
-    statusBox.classList.remove('status-default', 'status-ok', 'status-err', 'status-loading');
-    
-    // Add new class
-    if (cls) {
-      statusBox.classList.add(cls);
-    } else {
-      statusBox.classList.add('status-default');
-    }
-    
-    statusBox.textContent = text;
-  }
-
-  function addRow(size, result, ms, isSuccess){
-    const tr = document.createElement('tr');
-    
-    // Add appropriate class based on result
-    let resultClass = 'result-unknown';
-    if (isSuccess === true) {
-      resultClass = 'result-success';
-    } else if (isSuccess === false) {
-      resultClass = 'result-failure';
-    }
-    
-    tr.innerHTML = `
-      <td>${size}</td>
-      <td class="\( {resultClass}"> \){result}</td>
-      <td>${ms !== null && ms !== undefined ? ms : "—"}</td>
-    `;
-    
-    resultsBody.prepend(tr);
-    
-    // Update test results
-    testResults.total++;
-    if (isSuccess === true) {
-      testResults.success++;
-      if (size > testResults.largestSuccessfulPayload) {
-        testResults.largestSuccessfulPayload = size;
-      }
-    } else if (isSuccess === false) {
-      testResults.failed++;
-    }
-    
-    updateSummary();
-  }
-
-  // Safe integer parsing with bounds
-  function parsePayload(v){
-    const n = Number.parseInt(String(v).trim(), 10);
-    if (!Number.isFinite(n) || Number.isNaN(n)) return null;
-    if (n < 1) return null;
-    // arbitrary sanity bound to avoid insane requests
-    if (n > 65535 - 28) return null; // keep payload + 28 within typical MTU limits
-    return n;
-  }
-
-  async function run(size){
-    const s = parsePayload(size);
-    const texts = translations[currentLang];
-
-    if (s === null) {
-      setStatus("statusInvalidInput", null, "status-err");
-      addRow(size, texts.statusInvalidInput, null, false);
-      return false;
-    }
-
-    // compute MTU for display
-    const computedMTU = s + 28;
-
-    // Append unique query to reduce caching issues and force fresh fetch
-    const url = service + s + `?cachebust=${Date.now()}`;
-
-    setStatus("statusTesting", s, "status-loading");
-    const start = performance.now();
-
-    try {
-      // Use abort controller for timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
-      const resp = await fetch(url, { 
-        method: 'GET', 
-        cache: 'no-cache', 
-        mode: 'cors',
-        signal: controller.signal 
-      });
-      
-      clearTimeout(timeoutId);
-      const ms = Math.round(performance.now() - start);
-
-      if (!resp.ok) {
-        const resultText = `HTTP error ${resp.status}`;
-        addRow(s, resultText, ms, false);
-        setStatus("statusNetworkError", null, "status-err");
-        return false;
-      }
-
-      // read raw data
-      const buf = await resp.arrayBuffer();
-      const received = buf.byteLength;
-
-      // On success, display both payload and computed MTU
-      if (received === s) {
-        const successText = `\( {texts.statusSuccess(s)} — MTU= \){computedMTU}`;
-        addRow(s, successText, ms, true);
-        setStatus("statusSuccess", s, "status-ok");
-        return true;
-      } else {
-        // size mismatch
-        const resultText = `عدم تطابق: دریافت \( {received}/ \){s} — MTU محاسبه شده: ${computedMTU}`;
-        addRow(s, resultText, ms, false);
-        setStatus("statusNetworkError", null, "status-err");
-        return false;
-      }
-    } catch (e) {
-      clearTimeout(timeoutId);
-      const ms = Math.round(performance.now() - start);
-      const msg = String(e && e.message ? e.message : e);
-      // classify common fetch errors
-      let resultText;
-      if (msg.includes('abort') || msg.includes('timeout')) {
-        resultText = `Timeout after ${ms}ms`;
-      } else if (/network|failed|fetch/i.test(msg)) {
-        resultText = texts.statusNetworkError;
-      } else {
-        resultText = `Error: \( {msg.substring(0, 50)} \){msg.length > 50 ? '...' : ''}`;
-      }
-      addRow(s, resultText, ms, false);
-      setStatus("statusNetworkError", null, "status-err");
-      return false;
-    }
-  }
-
-  // Single run button
-  btnRun.addEventListener('click', async () => {
-    // Don't clear results for single test, just add to existing
-    const s = sizeInput.value;
-    await run(s);
-  });
-
-  // Auto multi-test
-  btnAuto.addEventListener('click', async () => {
-    // Clear results for fresh auto test
-    resultsBody.innerHTML = "";
-    testResults = {
-      total: 0,
-      success: 0,
-      failed: 0,
-      largestSuccessfulPayload: 0
-    };
-    updateSummary();
-    
-    // Test common payload sizes for typical MTU values
-    const testSizes = [
-      1472, // MTU 1500 (1500 - 28)
-      1452, // MTU 1480
-      1400,
-      1300,
-      1200,
-      1100,
-      1000,
-      900,
-      800,
-      700,
-      576,  // Minimum recommended
-      500,
-      400,
-      300,
-      200,
-      100
-    ];
-    
-    // disable buttons during auto run to prevent accidental re-click
-    btnAuto.disabled = true;
-    btnRun.disabled = true;
-    btnAuto.textContent = currentLang === 'fa' ? 'درحال تست...' : 'Testing...';
-    
-    try {
-      for (let i = 0; i < testSizes.length; i++) {
-        const s = testSizes[i];
-        await run(s);
-        
-        // small delay between tests to reduce burst load on remote server
-        // Longer delay for larger sizes
-        const delay = s > 1000 ? 500 : 300;
-        await new Promise(r => setTimeout(r, delay));
-      }
-      setStatus("statusComplete", null, "status-ok");
-    } finally {
-      btnAuto.disabled = false;
-      btnRun.disabled = false;
-      btnAuto.textContent = translations[currentLang].auto;
-    }
-  });
-
-  // Allow pressing Enter on input to run test
-  sizeInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      btnRun.click();
-    }
-  });
-
-  // initial text setup
-  updateTexts(currentLang);
-  
-  // Add disclaimer about browser limitations
-  console.log("MTU Tester: Note that browsers cannot set DF flag, so this is not a true MTU test.");
-  console.log("This tool tests data transfer size limits, not actual MTU fragmentation.");
-})();
-</script>
-</body>
-</html>
