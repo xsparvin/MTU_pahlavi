@@ -1,525 +1,649 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MTU Tester by xsparvin (Fixed & Futuristic)</title>
-  <style>
-    /* CSS Styling remains mostly the same, only adding necessary styles for new elements */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MTU Tester by xsparvin (Static)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
 
-    :root {
-      --bg: linear-gradient(135deg, #0d1222, #1a233a);
-      --card: rgba(24, 35, 61, 0.8);
-      --text: #e0e9ff;
-      --muted: #a1b2c9;
-      --accent: #00e0ff;
-      --accent-secondary: #ff00e0;
-      --glow-color: rgba(0, 224, 255, 0.6);
-      --glow-secondary: rgba(255, 0, 224, 0.6);
-      --glass: rgba(255, 255, 255, 0.1);
-      --input-bg: rgba(0, 0, 0, 0.4);
-      --shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 224, 255, 0.2);
-      --border-radius: 24px;
-      --transition: all 0.4s ease-in-out;
-    }
-    .light-theme {
-      --bg: linear-gradient(135deg, #eef3ff, #d9e3ff);
-      --card: rgba(255, 255, 255, 0.9);
-      --text: #1a202c;
-      --muted: #64748b;
-      --accent: #0084ff;
-      --accent-secondary: #ff0084;
-      --glow-color: rgba(0, 132, 255, 0.3);
-      --glow-secondary: rgba(255, 0, 132, 0.3);
-      --glass: rgba(0, 0, 0, 0.08);
-      --input-bg: #f8fafc;
-      --shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 132, 255, 0.1);
-    }
-  
-    body {
-      margin: 0;
-      padding: 32px;
-      font-family: "Inter", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      transition: var(--transition);
-      overflow-x: hidden;
-      position: relative;
-      direction: rtl; /* Added for RTL support */
-    }
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 50% 50%, rgba(0, 224, 255, 0.1), transparent 50%);
-      opacity: 0.5;
-      z-index: -1;
-      animation: pulse 10s infinite alternate;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.05); }
-    }
-    .wrap {
-      max-width: 960px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-    h1 {
-      font-size: 32px;
-      margin: 0 0 16px;
-      font-weight: 800;
-      color: var(--accent);
-      text-shadow: 0 0 12px var(--glow-color), 0 0 4px var(--glow-secondary);
-      text-align: center;
-      letter-spacing: 1px;
-      animation: neon-glow 2s ease-in-out infinite alternate;
-    }
-    @keyframes neon-glow {
-      from { text-shadow: 0 0 8px var(--glow-color); }
-      to { text-shadow: 0 0 16px var(--glow-color), 0 0 8px var(--glow-secondary); }
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--glass);
-      padding: 32px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-      margin-bottom: 32px;
-      animation: fadeInScale 0.8s ease;
-      transition: var(--transition);
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--glow-color);
-    }
-    @keyframes fadeInScale {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    label {
-      display: block;
-      font-size: 15px;
-      color: var(--muted);
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 16px;
-      border-radius: 16px;
-      background: var(--input-bg);
-      border: 1px solid var(--glass);
-      color: var(--text);
-      font-size: 16px;
-      box-sizing: border-box;
-      transition: var(--transition);
-      text-align: left; /* Keep LTR for URLs/numbers */
-      direction: ltr;
-    }
-    input[type="text"]:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 8px var(--glow-color), 0 0 4px var(--glow-secondary);
-      background: rgba(255, 255, 255, 0.05);
-    }
-    button {
-      padding: 14px 24px;
-      border-radius: 16px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-      color: var(--bg);
-      font-weight: 700;
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-      white-space: nowrap; /* Prevent button text wrapping */
-    }
-    button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 200%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
-    }
-    button:hover::before {
-      left: 100%;
-    }
-    button:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 0 20px var(--glow-color), 0 8px 24px rgba(0,0,0,0.4);
-    }
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-    #auto {
-      background: linear-gradient(135deg, var(--glass), var(--glass)) !important;
-      color: var(--text) !important;
-      border: 1px solid var(--muted) !important;
-    }
-    #auto:hover:not(:disabled) {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) !important;
-      box-shadow: 0 0 15px var(--glow-secondary);
-    }
-    #clear {
-      background: none;
-      color: #ff7b7b;
-      border: 1px solid #ff7b7b;
-    }
-    #clear:hover:not(:disabled) {
-      background: rgba(255, 123, 123, 0.1);
-      box-shadow: 0 0 15px rgba(255, 123, 123, 0.5);
-    }
-    .live-box {
-      margin-top: 24px;
-      border: 1px solid var(--glass);
-      border-radius: 16px;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.15);
-      transition: var(--transition);
-      box-shadow: inset 0 0 10px rgba(0, 224, 255, 0.1);
-    }
-    .status {
-      font-size: 15px;
-      margin-top: 8px;
-      transition: color 0.3s;
-      text-align: right;
-    }
-    .status-default { color: var(--muted); }
-    .status-ok { color: #66ffb8; text-shadow: 0 0 5px rgba(102, 255, 184, 0.5); }
-    .status-err { color: #ff7b7b; text-shadow: 0 0 5px rgba(255, 123, 123, 0.5); }
-    .status-loading { color: #ffe57a; animation: loading-pulse 1.5s infinite; }
-    @keyframes loading-pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-    pre {
-      background: rgba(0,0,0,0.25);
-      padding: 20px;
-      border-radius: 16px;
-      overflow-x: auto;
-      color: var(--accent);
-      border: 1px solid var(--glass);
-      font-size: 14px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
-      direction: ltr; /* Ensure code block is LTR */
-      text-align: left;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 24px;
-      font-size: 15px;
-      table-layout: fixed;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 0 15px var(--glow-color);
-    }
-    th, td {
-      padding: 16px;
-      border-bottom: 1px solid var(--glass);
-      text-align: right; /* RTL for table text */
-      transition: background 0.3s;
-    }
-    tr:hover {
-      background: rgba(255,255,255,0.05);
-    }
-    .result-success { color: #66ffb8; font-weight: 600; }
-    .result-failure { color: #ff7b7b; font-weight: 600; }
-    .result-unknown { color: var(--muted); }
-    .controls {
-      display: flex;
-      justify-content: flex-start; /* Changed to flex-start for RTL */
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .control-btn {
-      padding: 10px 16px;
-      border-radius: 12px;
-      background: var(--glass);
-      color: var(--text);
-      cursor: pointer;
-      font-size: 15px;
-      border: 1px solid var(--muted);
-      transition: var(--transition);
-    }
-    .control-btn:hover {
-      background: rgba(255,255,255,0.2);
-      box-shadow: 0 0 10px var(--glow-color);
-      transform: scale(1.05);
-    }
-    footer {
-      margin-top: 32px;
-      font-size: 14px;
-      color: var(--muted);
-      text-align: center;
-      opacity: 0.8;
-      transition: opacity 0.3s;
-    }
-    footer:hover {
-      opacity: 1;
-    }
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    footer a:hover {
-      color: var(--accent-secondary);
-      text-shadow: 0 0 5px var(--glow-secondary);
-    }
-    .button-group {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-top: 14px;
-        justify-content: flex-end; /* Align buttons to the left/right based on RTL */
-    }
-    @media (max-width: 600px) {
-      body { padding: 16px; }
-      .card { padding: 24px; }
-      h1 { font-size: 28px; }
-      .button-group { flex-direction: column; gap: 12px !important; margin-top: 16px !important; }
-      .button-group button { width: 100%; padding: 14px 0; }
-      .controls { justify-content: space-between; }
-      table { display: block; overflow-x: auto; white-space: nowrap; }
-      th, td { min-width: 120px; }
-    }
-  </style>
+:root {
+  --bg: linear-gradient(135deg, #0a101f, #151c30);
+  --card: rgba(24, 35, 61, 0.95);
+  --text: #e0e9ff;
+  --muted: #a1b2c9;
+  --accent: #00e0ff;
+  --accent-secondary: #ff00e0;
+  --glow-color: rgba(0, 224, 255, 0.7);
+  --glow-secondary: rgba(255, 0, 224, 0.7);
+  --glass: rgba(255,255,255,0.15);
+  --input-bg: rgba(0,0,0,0.5);
+  --shadow: 0 16px 50px rgba(0,0,0,0.8), 0 0 25px var(--glow-color);
+  --border-radius: 28px;
+  --transition: all 0.3s ease-out; /* Transition simplified for less movement */
+  --font-en: "Inter", sans-serif;
+  --font-fa: "Vazirmatn", sans-serif;
+}
+
+body.light-theme {
+  --bg: linear-gradient(135deg, #f0f4ff, #d9e3ff);
+  --card: rgba(255,255,255,0.98);
+  --text: #1a202c;
+  --muted: #64748b;
+  --accent: #0066ff;
+  --accent-secondary: #d600b6;
+  --glow-color: rgba(0,102,255,0.5);
+  --glow-secondary: rgba(214,0,182,0.5);
+  --glass: rgba(0,0,0,0.1);
+  --input-bg: #f8fafc;
+  --shadow: 0 16px 50px rgba(0,0,0,0.15), 0 0 25px var(--glow-color);
+}
+
+body {
+  margin: 0; padding: 32px;
+  font-family: var(--font-fa);
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; transition: var(--transition);
+  overflow-x: hidden; position: relative;
+}
+
+/* Background Animation REMOVED */
+body::before {
+  content:''; position:absolute; top:0; left:0; width:100%; height:100%;
+  background: radial-gradient(circle at 50% 50%, var(--glow-color), transparent 60%);
+  opacity: 0.15;
+  pointer-events: none; z-index:-1; 
+  /* animation: pulse REMOVED */
+}
+/* Keyframes pulse REMOVED */
+
+.wrap { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+
+h1 {
+  font-size: 36px; margin: 0 0 28px; font-weight: 900; color: var(--accent);
+  text-shadow: 0 0 15px var(--glow-color), 0 0 5px var(--glow-secondary);
+  text-align: center;
+  /* animation: neon-glow REMOVED */
+}
+/* Keyframes neon-glow REMOVED */
+
+.card {
+  background: var(--card); border: 2px solid var(--glass); 
+  padding: 32px;
+  border-radius: var(--border-radius); box-shadow: var(--shadow);
+  backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+  margin-bottom: 32px; transition: var(--transition);
+}
+.card:hover {
+    /* Transform REMOVED */
+    box-shadow: var(--shadow); /* Keep shadow static */
+}
+
+label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 8px; font-weight: 700; }
+
+input[type="text"], input[type="number"] {
+  width: 100%; padding: 14px; border-radius: 16px; background: var(--input-bg);
+  border: 1px solid var(--glass); color: var(--text); font-size: 16px; font-family: 'Inter', sans-serif;
+  box-sizing: border-box; text-align: left; direction: ltr; transition: all 0.2s ease-out;
+}
+input:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 15px var(--glow-color), inset 0 0 5px var(--glow-color);
+  background: rgba(255,255,255,0.08);
+}
+
+button {
+  padding: 14px 24px; border-radius: 14px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+  color: #fff; font-weight: 800; transition: all 0.2s ease-out;
+  position: relative; overflow: hidden; font-family: var(--font-fa); font-size: 15px;
+}
+button:hover:not(:disabled) { 
+    /* Transform REMOVED */
+    box-shadow: 0 0 15px var(--glow-color); /* Simplified hover effect */
+}
+/* Shimmer effect REMOVED */
+button::after { content: none; }
+/* Active transform REMOVED */
+button:active:not(:disabled) { transform: none; }
+button:disabled { 
+    opacity: 0.5; cursor: wait; 
+    filter: grayscale(80%); 
+    transform: none;
+    box-shadow: none;
+}
+
+#auto { background: var(--glass); border: 1px solid var(--muted); color: var(--text); }
+#auto:hover:not(:disabled) { background: rgba(255,255,255,0.2); border-color: var(--accent); }
+
+#clear { background: transparent; border: 1px solid #ff5555; color: #ff5555; }
+#clear:hover { background: rgba(255, 85, 85, 0.15); box-shadow: 0 0 15px rgba(255,85,85,0.7); }
+
+.live-box {
+  margin-top: 24px; border: 1px solid var(--glass); border-radius: 16px;
+  padding: 20px; background: rgba(0,0,0,0.3); 
+  min-height: 100px; 
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; 
+}
+.live-box strong { margin-bottom: 8px; color: var(--accent); }
+.status { 
+    font-size: 17px; margin-top: 8px; font-weight: bold; 
+    min-height: 20px; 
+    text-align: center;
+}
+.status-loading { color: #facc15; /* animation: blink REMOVED */ }
+/* Keyframes blink REMOVED */
+
+.status-ok { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.6); }
+.status-err { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
+
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 24px; font-size: 14px; }
+th, td { padding: 12px 16px; border-bottom: 1px solid var(--glass); text-align: center; }
+th { color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+tr:hover { background: rgba(255,255,255,0.08) !important; transition: none; }
+
+/* Table Container for Fixed Height */
+#tableContainer {
+    max-height: 300px; 
+    overflow-y: auto; 
+    margin-top: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--glass);
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+}
+#tableContainer table { margin-top: 0; }
+#tableContainer thead th { position: sticky; top: 0; background: var(--card); z-index: 10; border-bottom: 2px solid var(--accent); }
+
+
+/* Code Block */
+pre {
+  background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px;
+  overflow-x: auto; color: var(--accent); border: 1px solid var(--glass);
+  font-family: 'Courier New', monospace; direction: ltr; text-align: left; font-size: 13px;
+}
+
+/* Controls */
+.controls { display: flex; justify-content: space-between; margin-bottom: 24px; }
+.control-btn {
+  padding: 10px 18px; border-radius: 14px; background: var(--glass);
+  color: var(--text); cursor: pointer; font-size: 14px; border: 1px solid var(--glass);
+  transition: 0.2s ease-out; /* Reduced transition time */
+  display: flex; align-items: center; gap: 8px; 
+}
+.control-btn:hover { background: rgba(255,255,255,0.25); border-color: var(--accent); }
+
+.button-group { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+.button-group button { flex: 1; min-width: 140px; }
+
+footer { margin-top: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+footer a { color: var(--accent); text-decoration: none; }
+
+/* New Input Group Style */
+.input-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+.input-group > div {
+    flex: 1;
+}
+
+/* Responsive */
+@media(max-width: 600px) {
+  body { padding: 16px; }
+  .button-group { flex-direction: column; }
+  h1 { font-size: 24px; }
+  .input-group { flex-direction: column; }
+}
+
+/* Lang specific fonts */
+body[dir="ltr"] { font-family: var(--font-en); }
+body[dir="rtl"] { font-family: var(--font-fa); }
+</style>
 </head>
-<body>
+<body class="">
+
 <div class="wrap">
   <div class="controls">
-    <div id="languageToggle" class="control-btn" data-lang="fa">EN / FA</div>
+    <div id="languageToggle" class="control-btn">🌐 EN / FA</div>
     <div id="themeToggle" class="control-btn">💡 / 🌙</div>
   </div>
 
-  <h1 id="appTitle">تستر MTU</h1>
+  <h1 id="appTitle">تستر پیشرفته MTU</h1>
 
   <div class="card">
-    <label id="labelService">آدرس سرویس تست (Payload + Size)</label>
+    <label id="labelService">آدرس سرویس (Payload Generator URL)</label>
     <input id="serviceURL" type="text" value="https://httpbin.org/bytes/" dir="ltr" />
-
-    <label id="labelSize" style="margin-top: 16px;">اندازه بار مفید (بایت)</label>
-    <input id="size" type="text" value="1472" dir="ltr" />
     
-    <div class="button-group" style="margin-top:14px;">
-        <button id="clear" style="order: 4;">پاک کردن نتایج</button>
-        <button id="run" style="order: 2;">اجرای تست تکی</button>
-        <button id="auto" style="order: 1;">تست خودکار (جستجوی باینری)</button>
+    <div class="input-group">
+       <div style="flex:1;">
+           <label id="labelSize">سایز بسته (بایت) - تست تکی</label>
+           <input id="size" type="number" value="1472" dir="ltr" />
+       </div>
+    </div>
+    
+    <hr style="margin: 20px 0; border-color: var(--glass);" />
+
+    <h4 style="color:var(--accent); margin-bottom: 12px;">تنظیمات تست خودکار (جستجوی باینری)</h4>
+    <div class="input-group">
+        <div>
+           <label id="labelMinSize">شروع جستجو (Min Payload)</label>
+           <input id="minSize" type="number" value="500" dir="ltr" />
+        </div>
+        <div>
+           <label id="labelMaxSize">پایان جستجو (Max Payload)</label>
+           <input id="maxSize" type="number" value="1500" dir="ltr" />
+        </div>
     </div>
 
-    <div class="live-box" id="liveBox">
+
+    <div class="button-group">
+      <button id="run">اجرای تست تکی</button>
+      <button id="auto">تست خودکار (هوشمند)</button>
+      <button id="clear">پاکسازی</button>
+    </div>
+
+    <div class="live-box">
       <strong id="strongStatus">وضعیت لحظه‌ای:</strong>
-      <div id="liveStatus" class="status status-default">هنوز تستی انجام نشده است</div>
-      <div id="targetDisplay" style="font-size:12px; color:var(--accent-secondary); margin-top: 4px; text-align: right;"></div>
+      <div id="liveStatus" class="status" style="color:var(--muted)">منتظر دستور...</div>
+      <div id="testCounter" style="font-size:13px; color:var(--muted); margin-top: 5px;"></div>
     </div>
 
-    <table id="results">
-      <thead>
-        <tr>
-          <th id="thSize">اندازه</th>
-          <th id="thResult">نتیجه</th>
-          <th id="thTime">زمان (میلی‌ثانیه)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
+    <div id="tableContainer">
+        <table id="results">
+          <thead><tr><th id="thSize">سایز</th><th id="thResult">نتیجه</th><th id="thTime">زمان (ms)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+    </div>
   </div>
 
   <div class="card">
-    <h3 id="h3Accurate">بررسی دقیق MTU (روش واقعی)</h3>
-    <p id="pAccurate" style="font-size:14px;color:var(--muted);">
-      <strong>توجه:</strong> این ابزار MTU را به صورت مستقیم تست نمی‌کند، بلکه اندازه بسته قابل عبور را بررسی می‌کند.
-      برای تست واقعی MTU باید از دستورات زیر استفاده کنید:
+    <h3 id="h3Accurate">دستورات دقیق MTU (روش سیستمی)</h3>
+    <p id="pAccurate" style="font-size:14px; color:var(--muted); line-height:1.6;">
+      این ابزار مبتنی بر مرورگر است و محدودیت‌های خاص خود را دارد. برای تعیین دقیق MTU بدون فراگمنت شدن (DF)، بهترین راه استفاده از ترمینال سیستم عامل است:
     </p>
-<pre>
-Linux:
-  ping -M do -s &lt;PAYLOAD&gt; host  
+    <pre>
+Windows:
+ping -f -l &lt;SIZE&gt; google.com
+
+Linux / Android Terminal:
+ping -M do -s &lt;SIZE&gt; google.com
 
 macOS:
-  ping -D -s &lt;PAYLOAD&gt; host
+ping -D -s &lt;SIZE&gt; google.com
 
-Windows:
-  ping -f -l &lt;PAYLOAD&gt; host
-
-فرمول:
-MTU = payload + 28 (IP header + ICMP header)
-MTU واقعی شبکه شما = بزرگترین payload موفق + 28
-</pre>
-<div id="currentResults" style="margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.1); border-radius: 8px;">
-<h4 style="margin: 0 0 8px 0; color: var(--accent);">نتایج فعلی:</h4>
-<div id="summaryText">هنوز تستی انجام نشده است.</div>
-<div id="recommendedMTU" style="margin-top: 8px; font-weight: bold; color: var(--accent);"></div>
-</div>
-
+Formula: Real MTU = Max Payload + 28
+    </pre>
+    
+    <div id="summaryBox" style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px; border: 1px solid var(--glass); display:none;">
+        <h4 style="margin:0 0 10px 0; color:var(--accent);">📊 نتایج تحلیل</h4>
+        <div id="summaryText"></div>
+    </div>
   </div>
 
   <footer>
-    Made by xsparvin | Channel: <a href="https://t.me/xsfsociety" target="_blank">t.me/xsfsociety</a>
+    Made with ❤️ by xsparvin | <a href="https://t.me/xsfsociety" target="_blank">Channel</a>
   </footer>
 </div>
 
 <script>
-(function(){
-  // -------------- Translations (fa / en)
-  const translations = {
+// --- State & Config (No functional changes) ---
+const state = {
+    lang: localStorage.getItem('mtu_lang') || 'fa',
+    theme: localStorage.getItem('mtu_theme') || 'dark',
+    isRunning: false,
+    results: [],
+    testCount: 0
+};
+
+const translations = {
     fa: {
-      appTitle: "تستر MTU",
-      labelService: "آدرس سرویس تست (Payload + Size)",
-      labelSize: "اندازه بار مفید (بایت)",
-      run: "اجرای تست تکی",
-      auto: "تست خودکار (جستجوی باینری)",
-      clear: "پاک کردن نتایج",
-      strongStatus: "وضعیت لحظه‌ای:",
-      statusNoTest: "هنوز تستی انجام نشده است",
-      thSize: "اندازه",
-      thResult: "نتیجه",
-      thTime: "زمان (میلی‌ثانیه)",
-      h3Accurate: "بررسی دقیق MTU (روش واقعی)",
-      pAccurate: "توجه: این ابزار MTU را به صورت مستقیم تست نمی‌کند، بلکه اندازه بسته قابل عبور را بررسی می‌کند. برای تست واقعی MTU باید از دستورات زیر استفاده کنید:",
-      statusTesting: (size) => `درحال تست ${size} بایت...`,
-      statusSuccess: (size) => `موفقیت برای ${size} بایت`,
-      statusNetworkError: "خطای شبکه / عدم تطابق اندازه",
-      statusComplete: "جستجوی باینری کامل شد. بزرگترین Payload موفق یافت شد.",
-      statusInvalidInput: "ورودی نامعتبر",
-      summaryNoTests: "هنوز تستی انجام نشده است.",
-      summaryTestsDone: "تست‌های انجام شده: {{total}} | موفق: {{success}} | ناموفق: {{failed}}",
-      recommendedMTU: "پیشنهاد MTU: {{mtu}} (بر اساس بزرگترین payload موفق: {{payload}} بایت)",
-      warningJumbo: " ⚠️ (بالاتر از MTU معمولی اترنت)",
-      warningSmall: " ⚠️ (خیلی کوچک، ممکن است مشکلات اتصال داشته باشید)",
-      successNormal: " ✅ (مناسب برای بیشتر شبکه‌ها)",
-      resultSuccessSuffix: (mtu) => ` — MTU=${mtu}`,
-      resultMismatch: (received, expected, mtu) => `عدم تطابق: دریافت ${received}/${expected} — MTU محاسبه شده: ${mtu}`,
-      resultTimeout: (ms) => `Timeout بعد از ${ms}ms`,
-      resultError: (msg) => `خطا: ${msg}`,
-      networkError: "خطای شبکه"
+        appTitle: "تستر پیشرفته MTU",
+        labelService: "آدرس سرویس تست (Payload Generator)",
+        labelSize: "سایز بسته (بایت) - تست تکی",
+        labelMinSize: "شروع جستجو (Min Payload)",
+        labelMaxSize: "پایان جستجو (Max Payload)",
+        run: "اجرای تست تکی",
+        auto: "تست خودکار (هوشمند)",
+        clear: "پاک کردن نتایج",
+        strongStatus: "وضعیت لحظه‌ای:",
+        waiting: "منتظر دستور...",
+        testing: "درحال تست {n} بایت...",
+        success: "موفق",
+        failed: "ناموفق",
+        timeout: "Timeout",
+        error: "خطا",
+        thSize: "سایز",
+        thResult: "نتیجه",
+        thTime: "زمان (ms)",
+        h3Accurate: "بررسی دقیق MTU (روش ترمینال)",
+        pAccurate: "مرورگرها اجازه ارسال بسته ICMP واقعی را نمی‌دهند. این ابزار پایداری انتقال داده در حجم‌های مختلف را تست می‌کند. برای MTU دقیق لایه شبکه از دستورات زیر استفاده کنید:",
+        summaryHeader: "📊 نتایج تحلیل",
+        summaryResult: `بزرگترین بسته موفق: <strong>{max} بایت</strong><br>MTU پیشنهادی (تخمین): <strong>{mtu}</strong><br><span style="font-size:13px; font-weight:normal;">{classification}</span>`,
+        stop: "توقف تست",
+        counter: "تست‌های انجام شده: {current} از {total} (تخمین)",
+        class_std: "وضعیت: 🟢 استاندارد اترنت (1500)",
+        class_jumbo: "وضعیت: 🟠 بالاتر از استاندارد (Jumbo Frame یا مشکل مسیریابی)",
+        class_small: "وضعیت: 🔴 بسیار کوچک (احتمال وجود فایروال یا مشکل Fragmentation)"
     },
     en: {
-      appTitle: "MTU Tester",
-      labelService: "Test Service URL (Payload + Size)",
-      labelSize: "Payload Size (bytes)",
-      run: "Run Single Test",
-      auto: "Auto Test (Binary Search)",
-      clear: "Clear Results",
-      strongStatus: "Live Status:",
-      statusNoTest: "No test yet",
-      thSize: "Size",
-      thResult: "Result",
-      thTime: "Time (ms)",
-      h3Accurate: "Accurate MTU Check (Real Method)",
-      pAccurate: "Note: This tool does not test MTU directly, but checks the passable packet size. Use these commands for real MTU testing:",
-      statusTesting: (size) => `Testing ${size} bytes...`,
-      statusSuccess: (size) => `Success for ${size} bytes`,
-      statusNetworkError: "Network Error / Size Mismatch",
-      statusComplete: "Binary Search Complete. Largest successful payload found.",
-      statusInvalidInput: "Invalid input",
-      summaryNoTests: "No tests performed yet.",
-      summaryTestsDone: "Tests done: {{total}} | Success: {{success}} | Failed: {{failed}}",
-      recommendedMTU: "Recommended MTU: {{mtu}} (based on largest successful payload: {{payload}} bytes)",
-      warningJumbo: " ⚠️ (Higher than standard Ethernet MTU)",
-      warningSmall: " ⚠️ (Very small, may cause connectivity issues)",
-      successNormal: " ✅ (Suitable for most networks)",
-      resultSuccessSuffix: (mtu) => ` — MTU=${mtu}`,
-      resultMismatch: (received, expected, mtu) => `Mismatch: Received ${received}/${expected} — Computed MTU: ${mtu}`,
-      resultTimeout: (ms) => `Timeout after ${ms}ms`,
-      resultError: (msg) => `Error: ${msg}`,
-      networkError: "Network Error"
+        appTitle: "Advanced MTU Tester",
+        labelService: "Test Service URL (Payload Generator)",
+        labelSize: "Payload Size (bytes) - Single Test",
+        labelMinSize: "Start Search (Min Payload)",
+        labelMaxSize: "End Search (Max Payload)",
+        run: "Run Single Test",
+        auto: "Auto Test (Binary Search)",
+        clear: "Clear Results",
+        strongStatus: "Live Status:",
+        waiting: "Ready...",
+        testing: "Testing {n} bytes...",
+        success: "Success",
+        failed: "Failed",
+        timeout: "Timeout",
+        error: "Error",
+        thSize: "Size",
+        thResult: "Result",
+        thTime: "Time (ms)",
+        h3Accurate: "Accurate MTU Check (Terminal)",
+        pAccurate: "Browsers cannot send real ICMP packets with DF flag. This tool tests HTTP payload stability. For precise Network Layer MTU, use these commands:",
+        summaryHeader: "📊 Analysis Results",
+        summaryResult: `Max Successful Payload: <strong>{max} bytes</strong><br>Estimated Optimal MTU: <strong>{mtu}</strong><br><span style="font-size:13px; font-weight:normal;">{classification}</span>`,
+        stop: "Stop Test",
+        counter: "Tests completed: {current} of {total} (approx)",
+        class_std: "Status: 🟢 Standard Ethernet (1500)",
+        class_jumbo: "Status: 🟠 Higher than standard (Jumbo Frame or Routing Issue)",
+        class_small: "Status: 🔴 Very small (Possible Firewall or Fragmentation Issue)"
     }
-  };
+};
 
-  // DOM refs
-  const elementsToTranslate = {
-    appTitle: document.getElementById('appTitle'),
-    labelService: document.getElementById('labelService'),
-    labelSize: document.getElementById('labelSize'),
-    run: document.getElementById('run'),
-    auto: document.getElementById('auto'),
-    clear: document.getElementById('clear'),
-    strongStatus: document.getElementById('strongStatus'),
-    thSize: document.getElementById('thSize'),
-    thResult: document.getElementById('thResult'),
-    thTime: document.getElementById('thTime'),
-    h3Accurate: document.getElementById('h3Accurate'),
-    pAccurate: document.getElementById('pAccurate'),
-  };
+// --- DOM Elements (Same as before) ---
+const el = (id) => document.getElementById(id);
+const ui = {
+    appTitle: el('appTitle'),
+    labelService: el('labelService'),
+    labelSize: el('labelSize'),
+    labelMinSize: el('labelMinSize'),
+    labelMaxSize: el('labelMaxSize'),
+    serviceURL: el('serviceURL'),
+    sizeInput: el('size'),
+    minSizeInput: el('minSize'),
+    maxSizeInput: el('maxSize'),
+    runBtn: el('run'),
+    autoBtn: el('auto'),
+    clearBtn: el('clear'),
+    statusText: el('liveStatus'),
+    testCounter: el('testCounter'),
+    tableBody: el('results').querySelector('tbody'),
+    thSize: el('thSize'),
+    thResult: el('thResult'),
+    thTime: el('thTime'),
+    h3Accurate: el('h3Accurate'),
+    pAccurate: el('pAccurate'),
+    summaryBox: el('summaryBox'),
+    summaryText: el('summaryText')
+};
 
-  const langToggle = document.getElementById('languageToggle');
-  let currentLang = 'fa';
+// --- Initialization (Same as before) ---
+function init() {
+    setTheme(state.theme);
+    setLang(state.lang);
+    
+    el('themeToggle').onclick = toggleTheme;
+    el('languageToggle').onclick = toggleLang;
+    ui.runBtn.onclick = runSingleTest;
+    ui.autoBtn.onclick = runAutoTest;
+    ui.clearBtn.onclick = clearResults;
+}
 
-  function updateTexts(lang){
-    const texts = translations[lang];
-    document.documentElement.lang = lang === 'fa' ? 'fa' : 'en';
+// --- Theme & Lang Logic (Same as before) ---
+function setTheme(theme) {
+    state.theme = theme;
+    localStorage.setItem('mtu_theme', theme);
+    if (theme === 'light') document.body.classList.add('light-theme');
+    else document.body.classList.remove('light-theme');
+}
 
-    elementsToTranslate.appTitle.textContent = texts.appTitle;
-    elementsToTranslate.labelService.textContent = texts.labelService;
-    elementsToTranslate.labelSize.textContent = texts.labelSize;
-    elementsToTranslate.run.textContent = texts.run;
-    elementsToTranslate.auto.textContent = texts.auto;
-    elementsToTranslate.clear.textContent = texts.clear;
-    elementsToTranslate.strongStatus.textContent = texts.strongStatus;
-    elementsToTranslate.thSize.textContent = texts.thSize;
-    elementsToTranslate.thResult.textContent = texts.thResult;
-    elementsToTranslate.thTime.textContent = texts.thTime;
-    elementsToTranslate.h3Accurate.textContent = texts.h3Accurate;
-    elementsToTranslate.pAccurate.textContent = texts.pAccurate;
+function toggleTheme() {
+    setTheme(state.theme === 'dark' ? 'light' : 'dark');
+}
 
-    const statusBox = document.getElementById('liveStatus');
-    // Only update if it's currently showing the default 'No Test Yet' message
-    const faDefault = translations.fa.statusNoTest;
-    const enDefault = translations.en.statusNoTest;
-    if (statusBox.textContent === faDefault || statusBox.textContent === enDefault) {
-      statusBox.textContent = texts.statusNoTest;
+function setLang(lang) {
+    state.lang = lang;
+    localStorage.setItem('mtu_lang', lang);
+    document.body.dir = lang === 'fa' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+    
+    const t = translations[lang];
+    ui.appTitle.innerText = t.appTitle;
+    ui.labelService.innerText = t.labelService;
+    ui.labelSize.innerText = t.labelSize;
+    ui.labelMinSize.innerText = t.labelMinSize;
+    ui.labelMaxSize.innerText = t.labelMaxSize;
+    ui.runBtn.innerText = state.isRunning ? t.stop : t.run;
+    ui.autoBtn.innerText = state.isRunning ? t.stop : t.auto;
+    ui.clearBtn.innerText = t.clear;
+    el('strongStatus').innerText = t.strongStatus;
+    ui.statusText.innerText = state.isRunning ? ui.statusText.innerText : t.waiting;
+    ui.testCounter.innerText = '';
+    ui.thSize.innerText = t.thSize;
+    ui.thResult.innerText = t.thTime;
+    ui.thTime.innerText = t.thTime;
+    ui.h3Accurate.innerText = t.h3Accurate;
+    ui.pAccurate.innerText = t.pAccurate;
+}
+
+function toggleLang() {
+    setLang(state.lang === 'fa' ? 'en' : 'fa');
+}
+
+// --- Core Testing Logic (All functions are the same as the previous version) ---
+
+async function fetchPayload(size) {
+    const url = ui.serviceURL.value;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); 
+
+    const start = performance.now();
+    try {
+        const targetUrl = `${url}${size}?_t=${Date.now()}`;
+        const response = await fetch(targetUrl, { 
+            signal: controller.signal,
+            cache: "no-store",
+            mode: 'cors' 
+        });
+        
+        clearTimeout(timeoutId);
+        const end = performance.now();
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const blob = await response.blob();
+        if (blob.size !== parseInt(size)) throw new Error("Size Mismatch");
+
+        return { success: true, time: (end - start).toFixed(0) };
+    } catch (err) {
+        return { success: false, error: err.name === 'AbortError' ? 'Timeout' : err.message };
     }
+}
 
-    // Update summary
-    updateSummary();
+function logResult(size, result) {
+    const tr = document.createElement('tr');
+    const t = translations[state.lang];
+    
+    let statusHtml = '';
 
-    // Toggle button label
-    langToggle.textContent = lang === 'fa' ? 'EN / FA' : 'FA / EN';
-  }
-
-  langToggle.addEventListener('click', () => {
-    currentLang = currentLang === 'fa' ? 'en' : 'fa';
-    updateTexts(currentLang);
-  });
-
-  // Theme toggle
-  const themeToggle = document.getElementById('themeToggle');
-  let currentTheme = 'dark';
-  themeToggle.addEventListener('click', () => {
-    if (currentTheme === 'dark') {
-      document.body.classList.add('light-theme');
-      themeToggle.textContent = '🌙 / 💡';
-      currentTheme = 'light';
+    if (result.success) {
+        statusHtml = `<span class="res-success">✔ ${t.success}</span>`;
     } else {
-      document.body.classList.remove('light-theme');
-      themeToggle.textContent = '💡 / 🌙';
-      currentTheme = 'dark';
+        const msg = result.error === 'Timeout' ? t.timeout : t.failed;
+        statusHtml = `<span class="res-fail">✘ ${msg}</span>`;
     }
-  });
 
-  // Main logic
-  const serviceInput = document.getElementById('serviceURL'); // NEW
-  const sizeInput = document.getElementById('size');
-  const statusBox = document.getElementById('liveStatus');
-  const targetDisplay = document.getElementById('targetDisplay'); // NEW
-  const resultsBody = document.querySelector('#results tbody');
-  const btnRun = document.getElementById('run');
-  const btnAuto = document.
+    tr.innerHTML = `
+        <td style="font-family:monospace; font-weight:bold;">${size}</td>
+        <td>${statusHtml}</td>
+        <td dir="ltr">${result.time ? result.time : '-'}</td>
+    `;
+    
+    ui.tableBody.prepend(tr);
+    
+    ui.statusText.innerHTML = result.success ? 
+        `<span class="status-ok">${t.success}: ${size} bytes</span>` : 
+        `<span class="status-err">${t.failed}: ${size} bytes</span>`;
+
+    return result.success;
+}
+
+async function runSingleTest() {
+    if (state.isRunning) return stopTest();
+    
+    const size = parseInt(ui.sizeInput.value);
+    if (!size || size < 1) return alert('Invalid size');
+
+    setRunningState(true);
+    const t = translations[state.lang];
+    ui.statusText.innerText = t.testing.replace('{n}', size);
+    ui.statusText.className = 'status status-loading';
+
+    const result = await fetchPayload(size);
+    logResult(size, result);
+    setRunningState(false);
+}
+
+async function runAutoTest() {
+    if (state.isRunning) return stopTest();
+
+    let min = parseInt(ui.minSizeInput.value) || 500;
+    let max = parseInt(ui.maxSizeInput.value) || 1500;
+    
+    if (min >= max || min < 1 || max > 9000) {
+        alert('لطفاً بازه جستجوی معتبری وارد کنید (Max باید بزرگتر از Min باشد و Max از 9000 بیشتر نباشد).');
+        return;
+    }
+
+    setRunningState(true);
+    ui.tableBody.innerHTML = ''; 
+    let optimalPayload = 0;
+    
+    const totalTests = Math.ceil(Math.log2(max - min)) + 1;
+    state.testCount = 0; 
+    
+    const t = translations[state.lang];
+
+    let currentMin = min;
+    let currentMax = max;
+
+    while (currentMin <= currentMax && state.isRunning) {
+        let mid = Math.floor((currentMin + currentMax) / 2);
+        
+        state.testCount++;
+        ui.statusText.innerText = t.testing.replace('{n}', mid);
+        ui.statusText.className = 'status status-loading';
+        ui.testCounter.innerText = t.counter.replace('{current}', state.testCount).replace('{total}', totalTests);
+        
+        let success = await doTestStep(mid);
+        
+        if (success) {
+            optimalPayload = mid;
+            currentMin = mid + 1;
+        } else {
+            currentMax = mid - 1;
+        }
+        
+        await new Promise(r => setTimeout(r, 500));
+    }
+
+    if (state.isRunning) {
+        showSummary(optimalPayload);
+        ui.testCounter.innerText = '';
+        setRunningState(false);
+    }
+}
+
+async function doTestStep(size) {
+    const result = await fetchPayload(size);
+    logResult(size, result);
+    return result.success;
+}
+
+function getClassification(mtu, lang) {
+    const t = translations[lang];
+    if (mtu > 1528) {
+        return t.class_jumbo;
+    } else if (mtu <= 1500 && mtu >= 1400) {
+        return t.class_std;
+    } else if (mtu < 1400) {
+        return t.class_small;
+    }
+    return '';
+}
+
+function showSummary(maxPayload) {
+    if(maxPayload === 0) return;
+    
+    const t = translations[state.lang];
+    ui.summaryBox.style.display = 'block';
+    
+    const estimatedMTU = maxPayload + 28; 
+    
+    const classificationText = getClassification(estimatedMTU, state.lang);
+    
+    ui.summaryText.innerHTML = t.summaryResult
+        .replace('{max}', maxPayload)
+        .replace('{mtu}', estimatedMTU)
+        .replace('{classification}', classificationText);
+}
+
+function setRunningState(running) {
+    state.isRunning = running;
+    const t = translations[state.lang];
+    
+    if (running) {
+        ui.runBtn.innerText = t.stop;
+        ui.autoBtn.innerText = t.stop;
+        ui.runBtn.style.background = '#ff5555';
+        ui.autoBtn.style.background = '#ff5555';
+        ui.sizeInput.disabled = true;
+        ui.serviceURL.disabled = true;
+        ui.minSizeInput.disabled = true;
+        ui.maxSizeInput.disabled = true;
+    } else {
+        ui.runBtn.innerText = t.run;
+        ui.autoBtn.innerText = t.auto;
+        ui.runBtn.style.background = ''; 
+        ui.autoBtn.style.background = '';
+        ui.sizeInput.disabled = false;
+        ui.serviceURL.disabled = false;
+        ui.minSizeInput.disabled = false;
+        ui.maxSizeInput.disabled = false;
+        ui.statusText.innerText = t.waiting;
+        ui.statusText.className = 'status';
+        ui.testCounter.innerText = '';
+    }
+}
+
+function stopTest() {
+    setRunningState(false);
+    ui.statusText.innerText = "Stopped by user.";
+}
+
+function clearResults() {
+    ui.tableBody.innerHTML = '';
+    ui.summaryBox.style.display = 'none';
+    ui.statusText.innerText = translations[state.lang].waiting;
+    ui.testCounter.innerText = '';
+}
+
+// Start
+init();
+
+</script>
+</body>
+</html>
+
 
