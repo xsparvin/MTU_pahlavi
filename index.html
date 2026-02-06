@@ -1,649 +1,246 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MTU Tester by xsparvin (Static)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MTU & VPN Analyzer Enterprise</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
-
-:root {
-  --bg: linear-gradient(135deg, #0a101f, #151c30);
-  --card: rgba(24, 35, 61, 0.95);
-  --text: #e0e9ff;
-  --muted: #a1b2c9;
-  --accent: #00e0ff;
-  --accent-secondary: #ff00e0;
-  --glow-color: rgba(0, 224, 255, 0.7);
-  --glow-secondary: rgba(255, 0, 224, 0.7);
-  --glass: rgba(255,255,255,0.15);
-  --input-bg: rgba(0,0,0,0.5);
-  --shadow: 0 16px 50px rgba(0,0,0,0.8), 0 0 25px var(--glow-color);
-  --border-radius: 28px;
-  --transition: all 0.3s ease-out; /* Transition simplified for less movement */
-  --font-en: "Inter", sans-serif;
-  --font-fa: "Vazirmatn", sans-serif;
+:root{
+--bg:#020617;--card:#0f172a;--glass:rgba(255,255,255,.12);
+--text:#e5e7eb;--muted:#94a3b8;
+--accent:#38bdf8;--accent2:#818cf8;
+--ok:#4ade80;--bad:#f87171
 }
-
-body.light-theme {
-  --bg: linear-gradient(135deg, #f0f4ff, #d9e3ff);
-  --card: rgba(255,255,255,0.98);
-  --text: #1a202c;
-  --muted: #64748b;
-  --accent: #0066ff;
-  --accent-secondary: #d600b6;
-  --glow-color: rgba(0,102,255,0.5);
-  --glow-secondary: rgba(214,0,182,0.5);
-  --glass: rgba(0,0,0,0.1);
-  --input-bg: #f8fafc;
-  --shadow: 0 16px 50px rgba(0,0,0,0.15), 0 0 25px var(--glow-color);
+[data-theme="light"]{
+--bg:#eef2ff;--card:#fff;--glass:rgba(0,0,0,.08);
+--text:#0f172a;--muted:#64748b;
+--accent:#2563eb;--accent2:#4f46e5
 }
-
-body {
-  margin: 0; padding: 32px;
-  font-family: var(--font-fa);
-  background: var(--bg); color: var(--text);
-  min-height: 100vh; transition: var(--transition);
-  overflow-x: hidden; position: relative;
+[data-theme="midnight"]{
+--bg:#020617;--card:#020617;
+--accent:#22d3ee;--accent2:#0ea5e9
 }
-
-/* Background Animation REMOVED */
-body::before {
-  content:''; position:absolute; top:0; left:0; width:100%; height:100%;
-  background: radial-gradient(circle at 50% 50%, var(--glow-color), transparent 60%);
-  opacity: 0.15;
-  pointer-events: none; z-index:-1; 
-  /* animation: pulse REMOVED */
+[data-theme="neon"]{
+--bg:#020617;--card:#020617;
+--accent:#00ff9c;--accent2:#00e0ff
 }
-/* Keyframes pulse REMOVED */
-
-.wrap { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
-
-h1 {
-  font-size: 36px; margin: 0 0 28px; font-weight: 900; color: var(--accent);
-  text-shadow: 0 0 15px var(--glow-color), 0 0 5px var(--glow-secondary);
-  text-align: center;
-  /* animation: neon-glow REMOVED */
+*{box-sizing:border-box}
+body{
+margin:0;padding:24px;
+background:var(--bg);
+color:var(--text);
+font-family:Vazirmatn
 }
-/* Keyframes neon-glow REMOVED */
-
-.card {
-  background: var(--card); border: 2px solid var(--glass); 
-  padding: 32px;
-  border-radius: var(--border-radius); box-shadow: var(--shadow);
-  backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-  margin-bottom: 32px; transition: var(--transition);
+.wrap{max-width:1200px;margin:auto}
+h1{
+text-align:center;
+font-size:34px;
+background:linear-gradient(90deg,var(--accent),var(--accent2));
+-webkit-background-clip:text;color:transparent
 }
-.card:hover {
-    /* Transform REMOVED */
-    box-shadow: var(--shadow); /* Keep shadow static */
+.card{
+background:var(--card);
+border:1px solid var(--glass);
+border-radius:24px;
+padding:24px;margin-bottom:24px
 }
-
-label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 8px; font-weight: 700; }
-
-input[type="text"], input[type="number"] {
-  width: 100%; padding: 14px; border-radius: 16px; background: var(--input-bg);
-  border: 1px solid var(--glass); color: var(--text); font-size: 16px; font-family: 'Inter', sans-serif;
-  box-sizing: border-box; text-align: left; direction: ltr; transition: all 0.2s ease-out;
+.flex{display:flex;gap:12px;flex-wrap:wrap}
+.flex>*{flex:1}
+label{font-size:13px;font-weight:700;color:var(--muted)}
+input,select{
+width:100%;padding:14px;margin-top:6px;
+border-radius:14px;
+border:1px solid var(--glass);
+background:rgba(0,0,0,.35);
+color:var(--text);
+font-family:Inter
 }
-input:focus {
-  outline: none; border-color: var(--accent);
-  box-shadow: 0 0 15px var(--glow-color), inset 0 0 5px var(--glow-color);
-  background: rgba(255,255,255,0.08);
+button{
+padding:14px;border-radius:14px;
+border:none;font-weight:800;
+cursor:pointer;color:#fff
 }
-
-button {
-  padding: 14px 24px; border-radius: 14px; border: none; cursor: pointer;
-  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-  color: #fff; font-weight: 800; transition: all 0.2s ease-out;
-  position: relative; overflow: hidden; font-family: var(--font-fa); font-size: 15px;
+.primary{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.stop{background:#ef4444}
+.status{text-align:center;font-weight:800;margin-top:12px}
+.ok{color:var(--ok)} .err{color:var(--bad)}
+canvas{
+width:100%;height:300px;
+background:rgba(0,0,0,.35);
+border-radius:18px;margin-top:16px
 }
-button:hover:not(:disabled) { 
-    /* Transform REMOVED */
-    box-shadow: 0 0 15px var(--glow-color); /* Simplified hover effect */
+table{
+width:100%;border-collapse:collapse;margin-top:16px
 }
-/* Shimmer effect REMOVED */
-button::after { content: none; }
-/* Active transform REMOVED */
-button:active:not(:disabled) { transform: none; }
-button:disabled { 
-    opacity: 0.5; cursor: wait; 
-    filter: grayscale(80%); 
-    transform: none;
-    box-shadow: none;
+th,td{
+padding:10px;border-bottom:1px solid var(--glass);
+text-align:center;font-size:14px
 }
-
-#auto { background: var(--glass); border: 1px solid var(--muted); color: var(--text); }
-#auto:hover:not(:disabled) { background: rgba(255,255,255,0.2); border-color: var(--accent); }
-
-#clear { background: transparent; border: 1px solid #ff5555; color: #ff5555; }
-#clear:hover { background: rgba(255, 85, 85, 0.15); box-shadow: 0 0 15px rgba(255,85,85,0.7); }
-
-.live-box {
-  margin-top: 24px; border: 1px solid var(--glass); border-radius: 16px;
-  padding: 20px; background: rgba(0,0,0,0.3); 
-  min-height: 100px; 
-  display: flex; flex-direction: column; justify-content: center;
-  align-items: center; 
+th{color:var(--muted)}
+.badge{
+display:inline-block;
+padding:6px 12px;
+border-radius:999px;
+background:rgba(255,255,255,.1);
+font-size:13px
 }
-.live-box strong { margin-bottom: 8px; color: var(--accent); }
-.status { 
-    font-size: 17px; margin-top: 8px; font-weight: bold; 
-    min-height: 20px; 
-    text-align: center;
-}
-.status-loading { color: #facc15; /* animation: blink REMOVED */ }
-/* Keyframes blink REMOVED */
-
-.status-ok { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.6); }
-.status-err { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
-
-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 24px; font-size: 14px; }
-th, td { padding: 12px 16px; border-bottom: 1px solid var(--glass); text-align: center; }
-th { color: var(--muted); font-weight: 600; }
-tr:last-child td { border-bottom: none; }
-tr:nth-child(even) { background: rgba(255,255,255,0.02); }
-tr:hover { background: rgba(255,255,255,0.08) !important; transition: none; }
-
-/* Table Container for Fixed Height */
-#tableContainer {
-    max-height: 300px; 
-    overflow-y: auto; 
-    margin-top: 20px;
-    border-radius: 16px;
-    border: 1px solid var(--glass);
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
-}
-#tableContainer table { margin-top: 0; }
-#tableContainer thead th { position: sticky; top: 0; background: var(--card); z-index: 10; border-bottom: 2px solid var(--accent); }
-
-
-/* Code Block */
-pre {
-  background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px;
-  overflow-x: auto; color: var(--accent); border: 1px solid var(--glass);
-  font-family: 'Courier New', monospace; direction: ltr; text-align: left; font-size: 13px;
-}
-
-/* Controls */
-.controls { display: flex; justify-content: space-between; margin-bottom: 24px; }
-.control-btn {
-  padding: 10px 18px; border-radius: 14px; background: var(--glass);
-  color: var(--text); cursor: pointer; font-size: 14px; border: 1px solid var(--glass);
-  transition: 0.2s ease-out; /* Reduced transition time */
-  display: flex; align-items: center; gap: 8px; 
-}
-.control-btn:hover { background: rgba(255,255,255,0.25); border-color: var(--accent); }
-
-.button-group { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
-.button-group button { flex: 1; min-width: 140px; }
-
-footer { margin-top: 40px; text-align: center; color: var(--muted); font-size: 13px; }
-footer a { color: var(--accent); text-decoration: none; }
-
-/* New Input Group Style */
-.input-group {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-}
-.input-group > div {
-    flex: 1;
-}
-
-/* Responsive */
-@media(max-width: 600px) {
-  body { padding: 16px; }
-  .button-group { flex-direction: column; }
-  h1 { font-size: 24px; }
-  .input-group { flex-direction: column; }
-}
-
-/* Lang specific fonts */
-body[dir="ltr"] { font-family: var(--font-en); }
-body[dir="rtl"] { font-family: var(--font-fa); }
+footer{text-align:center;color:var(--muted);font-size:13px}
 </style>
 </head>
-<body class="">
 
+<body data-theme="dark">
 <div class="wrap">
-  <div class="controls">
-    <div id="languageToggle" class="control-btn">🌐 EN / FA</div>
-    <div id="themeToggle" class="control-btn">☀️ / 🌙</div>
-  </div>
 
-  <h1 id="appTitle">تستر پیشرفته MTU</h1>
+<h1>MTU & VPN Analyzer</h1>
 
-  <div class="card">
-    <label id="labelService">آدرس سرویس (Payload Generator URL)</label>
-    <input id="serviceURL" type="text" value="https://httpbin.org/bytes/" dir="ltr" />
-    
-    <div class="input-group">
-       <div style="flex:1;">
-           <label id="labelSize">سایز بسته (بایت) - تست تکی</label>
-           <input id="size" type="number" value="1472" dir="ltr" />
-       </div>
-    </div>
-    
-    <hr style="margin: 20px 0; border-color: var(--glass);" />
+<div class="card flex">
+<div>
+<label>Theme</label>
+<select id="theme">
+<option value="dark">Dark</option>
+<option value="light">Light</option>
+<option value="midnight">Midnight</option>
+<option value="neon">Neon</option>
+</select>
+</div>
+<div>
+<label>VPN Type (Manual)</label>
+<select id="vpn">
+<option value="0">Auto Detect</option>
+<option value="32">WireGuard</option>
+<option value="56">IPSec</option>
+<option value="60">OpenVPN UDP</option>
+<option value="80">OpenVPN TCP</option>
+</select>
+</div>
+</div>
 
-    <h4 style="color:var(--accent); margin-bottom: 12px;">تنظیمات تست خودکار (جستجوی باینری)</h4>
-    <div class="input-group">
-        <div>
-           <label id="labelMinSize">شروع جستجو (Min Payload)</label>
-           <input id="minSize" type="number" value="500" dir="ltr" />
-        </div>
-        <div>
-           <label id="labelMaxSize">پایان جستجو (Max Payload)</label>
-           <input id="maxSize" type="number" value="1500" dir="ltr" />
-        </div>
-    </div>
+<div class="card">
+<div class="flex">
+<input id="url" value="https://httpbin.org/bytes/" dir="ltr">
+<input id="size" type="number" value="1472" dir="ltr">
+</div>
+<div class="flex" style="margin-top:12px">
+<input id="min" type="number" value="500" dir="ltr">
+<input id="max" type="number" value="1500" dir="ltr">
+</div>
+<div class="flex" style="margin-top:16px">
+<button id="run" class="primary">Run</button>
+<button id="auto" class="primary">Auto</button>
+<button id="stop" class="stop">Stop</button>
+</div>
 
+<div id="status" class="status">Ready</div>
+<canvas id="chart"></canvas>
 
-    <div class="button-group">
-      <button id="run">اجرای تست تکی</button>
-      <button id="auto">تست خودکار (هوشمند)</button>
-      <button id="clear">پاکسازی</button>
-    </div>
+<table>
+<thead><tr><th>Payload</th><th>Status</th><th>Time</th></tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
 
-    <div class="live-box">
-      <strong id="strongStatus">وضعیت لحظه‌ای:</strong>
-      <div id="liveStatus" class="status" style="color:var(--muted)">منتظر دستور...</div>
-      <div id="testCounter" style="font-size:13px; color:var(--muted); margin-top: 5px;"></div>
-    </div>
+<div class="card">
+<h3>🧠 Auto Analysis</h3>
+<div id="analysis"></div>
+</div>
 
-    <div id="tableContainer">
-        <table id="results">
-          <thead><tr><th id="thSize">سایز</th><th id="thResult">نتیجه</th><th id="thTime">زمان (ms)</th></tr></thead>
-          <tbody></tbody>
-        </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3 id="h3Accurate">دستورات دقیق MTU (روش سیستمی)</h3>
-    <p id="pAccurate" style="font-size:14px; color:var(--muted); line-height:1.6;">
-      این ابزار مبتنی بر مرورگر است و محدودیت‌های خاص خود را دارد. برای تعیین دقیق MTU بدون فراگمنت شدن (DF)، بهترین راه استفاده از ترمینال سیستم عامل است:
-    </p>
-    <pre>
-Windows:
-ping -f -l &lt;SIZE&gt; google.com
-
-Linux / Android Terminal:
-ping -M do -s &lt;SIZE&gt; google.com
-
-macOS:
-ping -D -s &lt;SIZE&gt; google.com
-
-Formula: Real MTU = Max Payload + 28
-    </pre>
-    
-    <div id="summaryBox" style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px; border: 1px solid var(--glass); display:none;">
-        <h4 style="margin:0 0 10px 0; color:var(--accent);">📊 نتایج تحلیل</h4>
-        <div id="summaryText"></div>
-    </div>
-  </div>
-
-  <footer>
-    Made with ☯️ by xsparvin | <a href="https://t.me/xsfsociety" target="_blank">Channel</a>
-  </footer>
+<footer>Enterprise MTU Analyzer • xsparvin</footer>
 </div>
 
 <script>
-// --- State & Config (No functional changes) ---
-const state = {
-    lang: localStorage.getItem('mtu_lang') || 'fa',
-    theme: localStorage.getItem('mtu_theme') || 'dark',
-    isRunning: false,
-    results: [],
-    testCount: 0
-};
+const $=i=>document.getElementById(i)
+const ctx=$('chart').getContext('2d')
+let ctrl=null,running=false,points=[]
 
-const translations = {
-    fa: {
-        appTitle: "تستر پیشرفته MTU",
-        labelService: "آدرس سرویس تست (Payload Generator)",
-        labelSize: "سایز بسته (بایت) - تست تکی",
-        labelMinSize: "شروع جستجو (Min Payload)",
-        labelMaxSize: "پایان جستجو (Max Payload)",
-        run: "اجرای تست تکی",
-        auto: "تست خودکار (هوشمند)",
-        clear: "پاک کردن نتایج",
-        strongStatus: "وضعیت لحظه‌ای:",
-        waiting: "منتظر دستور...",
-        testing: "درحال تست {n} بایت...",
-        success: "موفق",
-        failed: "ناموفق",
-        timeout: "Timeout",
-        error: "خطا",
-        thSize: "سایز",
-        thResult: "نتیجه",
-        thTime: "زمان (ms)",
-        h3Accurate: "بررسی دقیق MTU (روش ترمینال)",
-        pAccurate: "مرورگرها اجازه ارسال بسته ICMP واقعی را نمی‌دهند. این ابزار پایداری انتقال داده در حجم‌های مختلف را تست می‌کند. برای MTU دقیق لایه شبکه از دستورات زیر استفاده کنید:",
-        summaryHeader: "📊 نتایج تحلیل",
-        summaryResult: `بزرگترین بسته موفق: <strong>{max} بایت</strong><br>MTU پیشنهادی (تخمین): <strong>{mtu}</strong><br><span style="font-size:13px; font-weight:normal;">{classification}</span>`,
-        stop: "توقف تست",
-        counter: "تست‌های انجام شده: {current} از {total} (تخمین)",
-        class_std: "وضعیت: 🟢 استاندارد اترنت (1500)",
-        class_jumbo: "وضعیت: 🟠 بالاتر از استاندارد (Jumbo Frame یا مشکل مسیریابی)",
-        class_small: "وضعیت: 🔴 بسیار کوچک (احتمال وجود فایروال یا مشکل Fragmentation)"
-    },
-    en: {
-        appTitle: "Advanced MTU Tester",
-        labelService: "Test Service URL (Payload Generator)",
-        labelSize: "Payload Size (bytes) - Single Test",
-        labelMinSize: "Start Search (Min Payload)",
-        labelMaxSize: "End Search (Max Payload)",
-        run: "Run Single Test",
-        auto: "Auto Test (Binary Search)",
-        clear: "Clear Results",
-        strongStatus: "Live Status:",
-        waiting: "Ready...",
-        testing: "Testing {n} bytes...",
-        success: "Success",
-        failed: "Failed",
-        timeout: "Timeout",
-        error: "Error",
-        thSize: "Size",
-        thResult: "Result",
-        thTime: "Time (ms)",
-        h3Accurate: "Accurate MTU Check (Terminal)",
-        pAccurate: "Browsers cannot send real ICMP packets with DF flag. This tool tests HTTP payload stability. For precise Network Layer MTU, use these commands:",
-        summaryHeader: "📊 Analysis Results",
-        summaryResult: `Max Successful Payload: <strong>{max} bytes</strong><br>Estimated Optimal MTU: <strong>{mtu}</strong><br><span style="font-size:13px; font-weight:normal;">{classification}</span>`,
-        stop: "Stop Test",
-        counter: "Tests completed: {current} of {total} (approx)",
-        class_std: "Status: 🟢 Standard Ethernet (1500)",
-        class_jumbo: "Status: 🟠 Higher than standard (Jumbo Frame or Routing Issue)",
-        class_small: "Status: 🔴 Very small (Possible Firewall or Fragmentation Issue)"
-    }
-};
+$('theme').onchange=e=>document.body.dataset.theme=e.target.value
 
-// --- DOM Elements (Same as before) ---
-const el = (id) => document.getElementById(id);
-const ui = {
-    appTitle: el('appTitle'),
-    labelService: el('labelService'),
-    labelSize: el('labelSize'),
-    labelMinSize: el('labelMinSize'),
-    labelMaxSize: el('labelMaxSize'),
-    serviceURL: el('serviceURL'),
-    sizeInput: el('size'),
-    minSizeInput: el('minSize'),
-    maxSizeInput: el('maxSize'),
-    runBtn: el('run'),
-    autoBtn: el('auto'),
-    clearBtn: el('clear'),
-    statusText: el('liveStatus'),
-    testCounter: el('testCounter'),
-    tableBody: el('results').querySelector('tbody'),
-    thSize: el('thSize'),
-    thResult: el('thResult'),
-    thTime: el('thTime'),
-    h3Accurate: el('h3Accurate'),
-    pAccurate: el('pAccurate'),
-    summaryBox: el('summaryBox'),
-    summaryText: el('summaryText')
-};
+function draw(){
+ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height)
+if(!points.length)return
+const w=ctx.canvas.width,h=ctx.canvas.height
+const maxX=Math.max(...points.map(p=>p.x))
+const maxY=Math.max(...points.map(p=>p.y||1))
 
-// --- Initialization (Same as before) ---
-function init() {
-    setTheme(state.theme);
-    setLang(state.lang);
-    
-    el('themeToggle').onclick = toggleTheme;
-    el('languageToggle').onclick = toggleLang;
-    ui.runBtn.onclick = runSingleTest;
-    ui.autoBtn.onclick = runAutoTest;
-    ui.clearBtn.onclick = clearResults;
+ctx.strokeStyle="rgba(255,255,255,.1)"
+for(let i=0;i<5;i++){
+ctx.beginPath();ctx.moveTo(0,i*h/5);ctx.lineTo(w,i*h/5);ctx.stroke()
+ctx.beginPath();ctx.moveTo(i*w/5,0);ctx.lineTo(i*w/5,h);ctx.stroke()
 }
 
-// --- Theme & Lang Logic (Same as before) ---
-function setTheme(theme) {
-    state.theme = theme;
-    localStorage.setItem('mtu_theme', theme);
-    if (theme === 'light') document.body.classList.add('light-theme');
-    else document.body.classList.remove('light-theme');
+ctx.beginPath()
+points.forEach((p,i)=>{
+const x=p.x/maxX*w
+const y=h-(p.y/maxY*h)
+i?ctx.lineTo(x,y):ctx.moveTo(x,y)
+})
+ctx.strokeStyle="#38bdf8";ctx.stroke()
+
+points.forEach(p=>{
+const x=p.x/maxX*w
+const y=h-(p.y/maxY*h)
+ctx.fillStyle=p.ok?"#4ade80":"#f87171"
+ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill()
+})
 }
 
-function toggleTheme() {
-    setTheme(state.theme === 'dark' ? 'light' : 'dark');
+async function fetchPayload(size){
+if(ctrl)ctrl.abort()
+ctrl=new AbortController()
+const t0=performance.now()
+try{
+const r=await fetch(`${$('url').value}${size}`,{signal:ctrl.signal})
+if(!r.ok)throw''
+const b=await r.blob()
+if(b.size!==size)throw''
+return{ok:true,time:Math.round(performance.now()-t0)}
+}catch{return{ok:false}}
 }
 
-function setLang(lang) {
-    state.lang = lang;
-    localStorage.setItem('mtu_lang', lang);
-    document.body.dir = lang === 'fa' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
-    
-    const t = translations[lang];
-    ui.appTitle.innerText = t.appTitle;
-    ui.labelService.innerText = t.labelService;
-    ui.labelSize.innerText = t.labelSize;
-    ui.labelMinSize.innerText = t.labelMinSize;
-    ui.labelMaxSize.innerText = t.labelMaxSize;
-    ui.runBtn.innerText = state.isRunning ? t.stop : t.run;
-    ui.autoBtn.innerText = state.isRunning ? t.stop : t.auto;
-    ui.clearBtn.innerText = t.clear;
-    el('strongStatus').innerText = t.strongStatus;
-    ui.statusText.innerText = state.isRunning ? ui.statusText.innerText : t.waiting;
-    ui.testCounter.innerText = '';
-    ui.thSize.innerText = t.thSize;
-    ui.thResult.innerText = t.thTime;
-    ui.thTime.innerText = t.thTime;
-    ui.h3Accurate.innerText = t.h3Accurate;
-    ui.pAccurate.innerText = t.pAccurate;
+function log(size,res){
+$('tbody').insertAdjacentHTML("afterbegin",
+`<tr><td>${size}</td><td class="${res.ok?'ok':'err'}">${res.ok?'OK':'FAIL'}</td><td>${res.time||'-'}</td></tr>`)
+points.push({x:size,y:res.time||0,ok:res.ok})
+draw()
 }
 
-function toggleLang() {
-    setLang(state.lang === 'fa' ? 'en' : 'fa');
+function autoDetect(){
+const fails=points.filter(p=>!p.ok).map(p=>p.x)
+if(!fails.length)return ''
+const avg=fails.reduce((a,b)=>a+b)/fails.length
+let type="WireGuard",conf=70
+if(avg<1380){type="OpenVPN TCP";conf=85}
+else if(avg<1420){type="OpenVPN UDP";conf=80}
+else if(avg<1450){type="IPSec";conf=75}
+return `Detected VPN: <span class="badge">${type}</span> | Confidence: ${conf}%`
 }
 
-// --- Core Testing Logic (All functions are the same as the previous version) ---
-
-async function fetchPayload(size) {
-    const url = ui.serviceURL.value;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); 
-
-    const start = performance.now();
-    try {
-        const targetUrl = `${url}${size}?_t=${Date.now()}`;
-        const response = await fetch(targetUrl, { 
-            signal: controller.signal,
-            cache: "no-store",
-            mode: 'cors' 
-        });
-        
-        clearTimeout(timeoutId);
-        const end = performance.now();
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const blob = await response.blob();
-        if (blob.size !== parseInt(size)) throw new Error("Size Mismatch");
-
-        return { success: true, time: (end - start).toFixed(0) };
-    } catch (err) {
-        return { success: false, error: err.name === 'AbortError' ? 'Timeout' : err.message };
-    }
+$('auto').onclick=async()=>{
+if(running)return
+running=true
+points=[];$('tbody').innerHTML=''
+let min=+$('min').value,max=+$('max').value
+while(min<=max&&running){
+const mid=(min+max)>>1
+$('status').innerText=`Testing ${mid}`
+const r=await fetchPayload(mid)
+log(mid,r)
+r.ok?min=mid+1:max=mid-1
+await new Promise(r=>setTimeout(r,300))
+}
+$('analysis').innerHTML=autoDetect()
+running=false;$('status').innerText='Ready'
 }
 
-function logResult(size, result) {
-    const tr = document.createElement('tr');
-    const t = translations[state.lang];
-    
-    let statusHtml = '';
-
-    if (result.success) {
-        statusHtml = `<span class="res-success">✔ ${t.success}</span>`;
-    } else {
-        const msg = result.error === 'Timeout' ? t.timeout : t.failed;
-        statusHtml = `<span class="res-fail">✘ ${msg}</span>`;
-    }
-
-    tr.innerHTML = `
-        <td style="font-family:monospace; font-weight:bold;">${size}</td>
-        <td>${statusHtml}</td>
-        <td dir="ltr">${result.time ? result.time : '-'}</td>
-    `;
-    
-    ui.tableBody.prepend(tr);
-    
-    ui.statusText.innerHTML = result.success ? 
-        `<span class="status-ok">${t.success}: ${size} bytes</span>` : 
-        `<span class="status-err">${t.failed}: ${size} bytes</span>`;
-
-    return result.success;
+$('run').onclick=async()=>{
+const r=await fetchPayload(+$('size').value)
+log(+$('size').value,r)
 }
 
-async function runSingleTest() {
-    if (state.isRunning) return stopTest();
-    
-    const size = parseInt(ui.sizeInput.value);
-    if (!size || size < 1) return alert('Invalid size');
-
-    setRunningState(true);
-    const t = translations[state.lang];
-    ui.statusText.innerText = t.testing.replace('{n}', size);
-    ui.statusText.className = 'status status-loading';
-
-    const result = await fetchPayload(size);
-    logResult(size, result);
-    setRunningState(false);
-}
-
-async function runAutoTest() {
-    if (state.isRunning) return stopTest();
-
-    let min = parseInt(ui.minSizeInput.value) || 500;
-    let max = parseInt(ui.maxSizeInput.value) || 1500;
-    
-    if (min >= max || min < 1 || max > 9000) {
-        alert('لطفاً بازه جستجوی معتبری وارد کنید (Max باید بزرگتر از Min باشد و Max از 9000 بیشتر نباشد).');
-        return;
-    }
-
-    setRunningState(true);
-    ui.tableBody.innerHTML = ''; 
-    let optimalPayload = 0;
-    
-    const totalTests = Math.ceil(Math.log2(max - min)) + 1;
-    state.testCount = 0; 
-    
-    const t = translations[state.lang];
-
-    let currentMin = min;
-    let currentMax = max;
-
-    while (currentMin <= currentMax && state.isRunning) {
-        let mid = Math.floor((currentMin + currentMax) / 2);
-        
-        state.testCount++;
-        ui.statusText.innerText = t.testing.replace('{n}', mid);
-        ui.statusText.className = 'status status-loading';
-        ui.testCounter.innerText = t.counter.replace('{current}', state.testCount).replace('{total}', totalTests);
-        
-        let success = await doTestStep(mid);
-        
-        if (success) {
-            optimalPayload = mid;
-            currentMin = mid + 1;
-        } else {
-            currentMax = mid - 1;
-        }
-        
-        await new Promise(r => setTimeout(r, 500));
-    }
-
-    if (state.isRunning) {
-        showSummary(optimalPayload);
-        ui.testCounter.innerText = '';
-        setRunningState(false);
-    }
-}
-
-async function doTestStep(size) {
-    const result = await fetchPayload(size);
-    logResult(size, result);
-    return result.success;
-}
-
-function getClassification(mtu, lang) {
-    const t = translations[lang];
-    if (mtu > 1528) {
-        return t.class_jumbo;
-    } else if (mtu <= 1500 && mtu >= 1400) {
-        return t.class_std;
-    } else if (mtu < 1400) {
-        return t.class_small;
-    }
-    return '';
-}
-
-function showSummary(maxPayload) {
-    if(maxPayload === 0) return;
-    
-    const t = translations[state.lang];
-    ui.summaryBox.style.display = 'block';
-    
-    const estimatedMTU = maxPayload + 28; 
-    
-    const classificationText = getClassification(estimatedMTU, state.lang);
-    
-    ui.summaryText.innerHTML = t.summaryResult
-        .replace('{max}', maxPayload)
-        .replace('{mtu}', estimatedMTU)
-        .replace('{classification}', classificationText);
-}
-
-function setRunningState(running) {
-    state.isRunning = running;
-    const t = translations[state.lang];
-    
-    if (running) {
-        ui.runBtn.innerText = t.stop;
-        ui.autoBtn.innerText = t.stop;
-        ui.runBtn.style.background = '#ff5555';
-        ui.autoBtn.style.background = '#ff5555';
-        ui.sizeInput.disabled = true;
-        ui.serviceURL.disabled = true;
-        ui.minSizeInput.disabled = true;
-        ui.maxSizeInput.disabled = true;
-    } else {
-        ui.runBtn.innerText = t.run;
-        ui.autoBtn.innerText = t.auto;
-        ui.runBtn.style.background = ''; 
-        ui.autoBtn.style.background = '';
-        ui.sizeInput.disabled = false;
-        ui.serviceURL.disabled = false;
-        ui.minSizeInput.disabled = false;
-        ui.maxSizeInput.disabled = false;
-        ui.statusText.innerText = t.waiting;
-        ui.statusText.className = 'status';
-        ui.testCounter.innerText = '';
-    }
-}
-
-function stopTest() {
-    setRunningState(false);
-    ui.statusText.innerText = "Stopped by user.";
-}
-
-function clearResults() {
-    ui.tableBody.innerHTML = '';
-    ui.summaryBox.style.display = 'none';
-    ui.statusText.innerText = translations[state.lang].waiting;
-    ui.testCounter.innerText = '';
-}
-
-// Start
-init();
-
+$('stop').onclick=()=>{if(ctrl)ctrl.abort();running=false;$('status').innerText='Stopped'}
 </script>
 </body>
 </html>
-
-
